@@ -1,0 +1,65 @@
+import { NavLink, Outlet, useLocation } from "react-router-dom";
+import { Music, ListMusic, Sparkles } from "lucide-react";
+import { cn } from "@/lib/utils";
+
+const tabs = [
+  { to: "/", label: "Songs", icon: Music, end: true },
+  { to: "/setlists", label: "Setlists", icon: ListMusic, end: false },
+];
+
+export function AppShell() {
+  const location = useLocation();
+  // Hide chrome in stage mode for full immersion
+  const isStage = location.pathname.startsWith("/stage/");
+
+  if (isStage) {
+    return <Outlet />;
+  }
+
+  return (
+    <div className="min-h-screen bg-background text-foreground flex flex-col">
+      <header className="sticky top-0 z-30 border-b border-border bg-background/80 backdrop-blur-md">
+        <div className="mx-auto flex h-14 max-w-3xl items-center justify-between px-4">
+          <div className="flex items-center gap-2">
+            <div className="flex h-8 w-8 items-center justify-center rounded-md bg-primary text-primary-foreground">
+              <Sparkles className="h-4 w-4" />
+            </div>
+            <div className="leading-tight">
+              <p className="text-sm font-bold tracking-tight">Setlist Studio</p>
+              <p className="text-[10px] text-muted-foreground">
+                Repertoire · Stage
+              </p>
+            </div>
+          </div>
+        </div>
+      </header>
+
+      <main className="mx-auto w-full max-w-3xl flex-1 px-4 pb-28 pt-4">
+        <Outlet />
+      </main>
+
+      <nav className="fixed bottom-0 left-0 right-0 z-30 border-t border-border bg-card/95 backdrop-blur-md">
+        <div className="mx-auto flex max-w-3xl items-center justify-around px-2 py-2">
+          {tabs.map((tab) => (
+            <NavLink
+              key={tab.to}
+              to={tab.to}
+              end={tab.end}
+              className={({ isActive }) =>
+                cn(
+                  "flex min-w-[88px] flex-col items-center gap-1 rounded-lg px-4 py-2 text-xs font-medium transition-colors",
+                  isActive
+                    ? "bg-primary/15 text-primary"
+                    : "text-muted-foreground hover:text-foreground"
+                )
+              }
+            >
+              <tab.icon className="h-5 w-5" />
+              {tab.label}
+            </NavLink>
+          ))}
+        </div>
+      </nav>
+    </div>
+  );
+}

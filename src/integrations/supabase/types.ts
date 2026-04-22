@@ -14,6 +14,30 @@ export type Database = {
   }
   public: {
     Tables: {
+      band_members: {
+        Row: {
+          created_at: string
+          id: string
+          instruments: Json
+          name: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          instruments?: Json
+          name: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          instruments?: Json
+          name?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       setlists: {
         Row: {
           created_at: string
@@ -43,6 +67,7 @@ export type Database = {
           created_at: string
           id: string
           intro_info: string | null
+          intro_starter_ids: Json
           musical_key: string | null
           notes: string | null
           pdf_path: string | null
@@ -57,6 +82,7 @@ export type Database = {
           created_at?: string
           id?: string
           intro_info?: string | null
+          intro_starter_ids?: Json
           musical_key?: string | null
           notes?: string | null
           pdf_path?: string | null
@@ -71,6 +97,7 @@ export type Database = {
           created_at?: string
           id?: string
           intro_info?: string | null
+          intro_starter_ids?: Json
           musical_key?: string | null
           notes?: string | null
           pdf_path?: string | null

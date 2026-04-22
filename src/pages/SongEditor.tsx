@@ -69,12 +69,12 @@ export default function SongEditor() {
         reference_url: form.reference_url.trim() || null,
         pdf_url: form.pdf_url,
         pdf_path: form.pdf_path,
-        structure: form.structure as unknown as object,
+        structure: form.structure as unknown as never,
       };
       if (isNew) {
         const { data, error } = await supabase
           .from("songs")
-          .insert(payload)
+          .insert(payload as never)
           .select("id")
           .single();
         if (error) throw error;
@@ -84,7 +84,7 @@ export default function SongEditor() {
       } else {
         const { error } = await supabase
           .from("songs")
-          .update(payload)
+          .update(payload as never)
           .eq("id", id!);
         if (error) throw error;
         toast.success("Saved");

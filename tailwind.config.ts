@@ -57,6 +57,21 @@ export default {
           border: "hsl(var(--sidebar-border))",
           ring: "hsl(var(--sidebar-ring))",
         },
+        stage: {
+          bg: "hsl(var(--stage-bg))",
+          fg: "hsl(var(--stage-fg))",
+          accent: "hsl(var(--stage-accent))",
+          muted: "hsl(var(--stage-muted))",
+        },
+        section: {
+          intro: "hsl(var(--section-intro))",
+          verse: "hsl(var(--section-verse))",
+          chorus: "hsl(var(--section-chorus))",
+          bridge: "hsl(var(--section-bridge))",
+          solo: "hsl(var(--section-solo))",
+          outro: "hsl(var(--section-outro))",
+          modulation: "hsl(var(--section-modulation))",
+        },
       },
       borderRadius: {
         lg: "var(--radius)",

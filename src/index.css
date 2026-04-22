@@ -8,35 +8,51 @@ All colors MUST be HSL.
 
 @layer base {
   :root {
-    --background: 0 0% 100%;
-    --foreground: 222.2 84% 4.9%;
+    /* Dark stage theme — applied by default for live performance use */
+    --background: 222 25% 6%;
+    --foreground: 40 30% 96%;
 
-    --card: 0 0% 100%;
-    --card-foreground: 222.2 84% 4.9%;
+    --card: 222 22% 9%;
+    --card-foreground: 40 30% 96%;
 
-    --popover: 0 0% 100%;
-    --popover-foreground: 222.2 84% 4.9%;
+    --popover: 222 22% 9%;
+    --popover-foreground: 40 30% 96%;
 
-    --primary: 222.2 47.4% 11.2%;
-    --primary-foreground: 210 40% 98%;
+    --primary: 38 96% 56%;
+    --primary-foreground: 222 30% 8%;
 
-    --secondary: 210 40% 96.1%;
-    --secondary-foreground: 222.2 47.4% 11.2%;
+    --secondary: 222 18% 14%;
+    --secondary-foreground: 40 30% 96%;
 
-    --muted: 210 40% 96.1%;
-    --muted-foreground: 215.4 16.3% 46.9%;
+    --muted: 222 18% 14%;
+    --muted-foreground: 220 10% 65%;
 
-    --accent: 210 40% 96.1%;
-    --accent-foreground: 222.2 47.4% 11.2%;
+    --accent: 38 96% 56%;
+    --accent-foreground: 222 30% 8%;
 
-    --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 210 40% 98%;
+    --destructive: 0 75% 55%;
+    --destructive-foreground: 0 0% 100%;
 
-    --border: 214.3 31.8% 91.4%;
-    --input: 214.3 31.8% 91.4%;
-    --ring: 222.2 84% 4.9%;
+    --border: 222 18% 18%;
+    --input: 222 18% 16%;
+    --ring: 38 96% 56%;
 
-    --radius: 0.5rem;
+    --radius: 0.75rem;
+
+    /* Stage mode — maximum contrast */
+    --stage-bg: 0 0% 0%;
+    --stage-fg: 0 0% 100%;
+    --stage-accent: 38 100% 60%;
+    --stage-muted: 0 0% 70%;
+
+    /* Section type colors */
+    --section-intro: 200 90% 60%;
+    --section-verse: 150 60% 55%;
+    --section-chorus: 38 96% 56%;
+    --section-bridge: 280 70% 65%;
+    --section-solo: 340 80% 60%;
+    --section-outro: 220 20% 60%;
+    --section-modulation: 12 85% 60%;
 
     --sidebar-background: 0 0% 98%;
 

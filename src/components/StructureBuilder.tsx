@@ -33,6 +33,16 @@ import {
 } from "@/types/song";
 import { cn } from "@/lib/utils";
 
+const DOT_COLOR: Record<SectionType, string> = {
+  Intro: "bg-section-intro",
+  Verse: "bg-section-verse",
+  Chorus: "bg-section-chorus",
+  Bridge: "bg-section-bridge",
+  Solo: "bg-section-solo",
+  Outro: "bg-section-outro",
+  Modulation: "bg-section-modulation",
+};
+
 interface Props {
   sections: SongSection[];
   onChange: (sections: SongSection[]) => void;
@@ -217,7 +227,7 @@ export function StructureBuilder({ sections, onChange }: Props) {
               <span
                 className={cn(
                   "mr-2 inline-block h-2.5 w-2.5 rounded-full",
-                  `bg-section-${type.toLowerCase()}`
+                  DOT_COLOR[type]
                 )}
               />
               {type}

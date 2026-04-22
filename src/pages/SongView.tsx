@@ -9,6 +9,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { useSong } from "@/hooks/useSongs";
+import { useBandMembers } from "@/hooks/useBandMembers";
 import { SECTION_COLOR } from "@/types/song";
 import { cn } from "@/lib/utils";
 
@@ -16,6 +17,7 @@ export default function SongView() {
   const { id } = useParams();
   const navigate = useNavigate();
   const { data: song, isLoading } = useSong(id);
+  const { data: members } = useBandMembers();
 
   if (isLoading) {
     return <p className="py-12 text-center text-muted-foreground">Loading…</p>;
@@ -61,6 +63,32 @@ export default function SongView() {
               Intro
             </p>
             <p className="mt-1 text-sm">{song.intro_info}</p>
+          </div>
+        )}
+        {(song.intro_starter_ids?.length ?? 0) > 0 && (
+          <div>
+            <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+              Începe intro-ul
+            </p>
+            <div className="mt-1 flex flex-wrap gap-1.5">
+              {song.intro_starter_ids.map((sid) => {
+                const m = members?.find((x) => x.id === sid);
+                if (!m) return null;
+                return (
+                  <span
+                    key={sid}
+                    className="rounded-md border border-primary/30 bg-primary/10 px-2 py-0.5 text-sm font-medium text-primary"
+                  >
+                    {m.name}
+                    {m.instruments.length > 0 && (
+                      <span className="ml-1 text-xs text-primary/70">
+                        · {m.instruments.join(", ")}
+                      </span>
+                    )}
+                  </span>
+                );
+              })}
+            </div>
           </div>
         )}
         {song.notes && (

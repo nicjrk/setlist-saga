@@ -3,6 +3,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import { ChevronLeft, ChevronRight, X, List } from "lucide-react";
 import { useSetlist } from "@/hooks/useSetlists";
 import { useSongs } from "@/hooks/useSongs";
+import { useBandMembers } from "@/hooks/useBandMembers";
 import {
   Sheet,
   SheetContent,
@@ -17,6 +18,7 @@ export default function StageMode() {
   const navigate = useNavigate();
   const { data: setlist, isLoading } = useSetlist(id);
   const { data: songs } = useSongs();
+  const { data: members } = useBandMembers();
   const [index, setIndex] = useState(0);
   const [open, setOpen] = useState(false);
 
@@ -165,6 +167,33 @@ export default function StageMode() {
             <p className="text-3xl font-bold leading-snug sm:text-4xl">
               {song.intro_info}
             </p>
+          </div>
+        )}
+
+        {(song.intro_starter_ids?.length ?? 0) > 0 && (
+          <div>
+            <p className="text-sm font-bold uppercase tracking-widest text-stage-muted">
+              Începe
+            </p>
+            <div className="mt-1 flex flex-wrap gap-2">
+              {song.intro_starter_ids.map((sid) => {
+                const m = members?.find((x) => x.id === sid);
+                if (!m) return null;
+                return (
+                  <span
+                    key={sid}
+                    className="rounded-lg border-2 border-stage-accent/60 bg-stage-accent/10 px-3 py-1.5 text-2xl font-bold text-stage-accent sm:text-3xl"
+                  >
+                    {m.name}
+                    {m.instruments.length > 0 && (
+                      <span className="ml-2 text-lg font-medium text-stage-accent/80 sm:text-xl">
+                        · {m.instruments.join(", ")}
+                      </span>
+                    )}
+                  </span>
+                );
+              })}
+            </div>
           </div>
         )}
 

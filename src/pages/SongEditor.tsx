@@ -9,6 +9,7 @@ import { Card } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { StructureBuilder } from "@/components/StructureBuilder";
 import { PdfUploader } from "@/components/PdfUploader";
+import { IntroStarterPicker } from "@/components/IntroStarterPicker";
 import { supabase } from "@/integrations/supabase/client";
 import { useSong } from "@/hooks/useSongs";
 import { useQueryClient } from "@tanstack/react-query";
@@ -25,6 +26,7 @@ const empty = {
   pdf_url: null as string | null,
   pdf_path: null as string | null,
   structure: [] as SongSection[],
+  intro_starter_ids: [] as string[],
 };
 
 export default function SongEditor() {
@@ -49,6 +51,9 @@ export default function SongEditor() {
         pdf_url: song.pdf_url,
         pdf_path: song.pdf_path,
         structure: Array.isArray(song.structure) ? song.structure : [],
+        intro_starter_ids: Array.isArray(song.intro_starter_ids)
+          ? song.intro_starter_ids
+          : [],
       });
     }
   }, [song]);
@@ -70,6 +75,7 @@ export default function SongEditor() {
         pdf_url: form.pdf_url,
         pdf_path: form.pdf_path,
         structure: form.structure as unknown as never,
+        intro_starter_ids: form.intro_starter_ids as unknown as never,
       };
       if (isNew) {
         const { data, error } = await supabase
@@ -176,6 +182,17 @@ export default function SongEditor() {
             placeholder="e.g. 4 bars of guitar arpeggio"
             className="h-11"
           />
+        </div>
+        <div>
+          <Label>Cine începe intro-ul</Label>
+          <div className="mt-2">
+            <IntroStarterPicker
+              value={form.intro_starter_ids}
+              onChange={(intro_starter_ids) =>
+                setForm({ ...form, intro_starter_ids })
+              }
+            />
+          </div>
         </div>
         <div>
           <Label htmlFor="notes">General Notes</Label>

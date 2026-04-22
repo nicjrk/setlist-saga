@@ -34,6 +34,30 @@ export interface Song {
   reference_url: string | null;
   pdf_url: string | null;
   pdf_path: string | null;
+  intro_starter_ids: string[];
+  created_at: string;
+  updated_at: string;
+}
+
+export const PRESET_INSTRUMENTS = [
+  "Pian",
+  "Chitară acustică",
+  "Chitară electrică",
+  "Chitară clasică",
+  "Bass",
+  "Tobe",
+  "Voce",
+  "Backing vocal",
+  "Vioară",
+  "Saxofon",
+  "Trompetă",
+  "Percuție",
+] as const;
+
+export interface BandMember {
+  id: string;
+  name: string;
+  instruments: string[];
   created_at: string;
   updated_at: string;
 }

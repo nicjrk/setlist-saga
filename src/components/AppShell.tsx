@@ -1,10 +1,11 @@
 import { NavLink, Outlet, useLocation } from "react-router-dom";
-import { Music, ListMusic, Sparkles } from "lucide-react";
+import { Music, ListMusic, Sparkles, Users } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 const tabs = [
   { to: "/", label: "Songs", icon: Music, end: true },
   { to: "/setlists", label: "Setlists", icon: ListMusic, end: false },
+  { to: "/members", label: "Members", icon: Users, end: false },
 ];
 
 export function AppShell() {

@@ -1,6 +1,8 @@
 import { NavLink, Outlet, useLocation } from "react-router-dom";
-import { Music, ListMusic, Sparkles, Users } from "lucide-react";
+import { Music, ListMusic, Sparkles, Users, Sun, Moon } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { useTheme } from "@/hooks/useTheme";
+import { Button } from "@/components/ui/button";
 
 const tabs = [
   { to: "/", label: "Songs", icon: Music, end: true },
@@ -10,6 +12,7 @@ const tabs = [
 
 export function AppShell() {
   const location = useLocation();
+  const { theme, toggle } = useTheme();
   // Hide chrome in stage mode for full immersion
   const isStage = location.pathname.startsWith("/stage/");
 
@@ -32,6 +35,19 @@ export function AppShell() {
               </p>
             </div>
           </div>
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={toggle}
+            aria-label={theme === "dark" ? "Activează light mode" : "Activează dark mode"}
+            className="h-9 w-9"
+          >
+            {theme === "dark" ? (
+              <Sun className="h-4 w-4" />
+            ) : (
+              <Moon className="h-4 w-4" />
+            )}
+          </Button>
         </div>
       </header>
 

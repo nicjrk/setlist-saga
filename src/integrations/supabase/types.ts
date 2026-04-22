@@ -14,7 +14,75 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      setlists: {
+        Row: {
+          created_at: string
+          id: string
+          name: string
+          song_ids: Json
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          name: string
+          song_ids?: Json
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          name?: string
+          song_ids?: Json
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      songs: {
+        Row: {
+          created_at: string
+          id: string
+          intro_info: string | null
+          musical_key: string | null
+          notes: string | null
+          pdf_path: string | null
+          pdf_url: string | null
+          reference_url: string | null
+          structure: Json
+          title: string
+          updated_at: string
+          verses_count: number | null
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          intro_info?: string | null
+          musical_key?: string | null
+          notes?: string | null
+          pdf_path?: string | null
+          pdf_url?: string | null
+          reference_url?: string | null
+          structure?: Json
+          title: string
+          updated_at?: string
+          verses_count?: number | null
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          intro_info?: string | null
+          musical_key?: string | null
+          notes?: string | null
+          pdf_path?: string | null
+          pdf_url?: string | null
+          reference_url?: string | null
+          structure?: Json
+          title?: string
+          updated_at?: string
+          verses_count?: number | null
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never

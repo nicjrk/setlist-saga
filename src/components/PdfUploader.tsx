@@ -1,5 +1,5 @@
 import { useRef, useState } from "react";
-import { Upload, FileText, X, ExternalLink } from "lucide-react";
+import { Upload, FileText, Image as ImageIcon, X, ExternalLink } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
@@ -10,13 +10,30 @@ interface Props {
   onChange: (data: { pdf_url: string | null; pdf_path: string | null }) => void;
 }
 
+const ACCEPTED_TYPES = [
+  "application/pdf",
+  "image/jpeg",
+  "image/png",
+  "image/webp",
+  "image/gif",
+  "image/heic",
+  "image/heif",
+];
+
+const isImage = (url: string | null) => {
+  if (!url) return false;
+  return /\.(jpg|jpeg|png|webp|gif|heic|heif)(\?|$)/i.test(url);
+};
+
 export function PdfUploader({ pdfUrl, pdfPath, onChange }: Props) {
   const inputRef = useRef<HTMLInputElement>(null);
   const [uploading, setUploading] = useState(false);
 
   const handleFile = async (file: File) => {
-    if (file.type !== "application/pdf") {
-      toast.error("Please upload a PDF file");
+    const isPdf = file.type === "application/pdf";
+    const isImg = file.type.startsWith("image/");
+    if (!isPdf && !isImg) {
+      toast.error("Please upload a PDF or image file");
       return;
     }
     setUploading(true);
@@ -25,7 +42,7 @@ export function PdfUploader({ pdfUrl, pdfPath, onChange }: Props) {
       const path = `${crypto.randomUUID()}.${ext}`;
       const { error: upErr } = await supabase.storage
         .from("sheet-music")
-        .upload(path, file, { contentType: "application/pdf" });
+        .upload(path, file, { contentType: file.type });
       if (upErr) throw upErr;
 
       const { data: pub } = supabase.storage

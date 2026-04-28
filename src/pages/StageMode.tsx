@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { ChevronLeft, ChevronRight, X, List } from "lucide-react";
+import { ChevronLeft, ChevronRight, X, List, Eye, EyeOff } from "lucide-react";
 import { useSetlist } from "@/hooks/useSetlists";
 import { useSongs } from "@/hooks/useSongs";
 import { useBandMembers } from "@/hooks/useBandMembers";
@@ -27,6 +27,7 @@ export default function StageMode() {
   const [open, setOpen] = useState(false);
   const [transposeMap, setTransposeMap] = useState<Record<string, number>>({});
   const [notation] = useNotation();
+  const [showLyrics, setShowLyrics] = useState(true);
 
   const songMap = useMemo(() => new Map(songs?.map((s) => [s.id, s])), [songs]);
   const items = useMemo(
@@ -132,13 +133,29 @@ export default function StageMode() {
           {index + 1} / {items.length} · {setlist.name}
         </p>
 
-        <button
-          onClick={() => navigate(`/setlists/${id}`)}
-          className="rounded-lg p-2 text-stage-muted hover:bg-white/5"
-          aria-label="Exit stage mode"
-        >
-          <X className="h-5 w-5" />
-        </button>
+        <div className="flex items-center gap-1">
+          <button
+            onClick={() => setShowLyrics((v) => !v)}
+            className="flex items-center gap-2 rounded-lg px-3 py-2 text-sm font-bold text-stage-muted hover:bg-white/5"
+            aria-label={showLyrics ? "Hide lyrics" : "Show lyrics"}
+          >
+            {showLyrics ? (
+              <EyeOff className="h-5 w-5" />
+            ) : (
+              <Eye className="h-5 w-5" />
+            )}
+            <span className="hidden sm:inline">
+              {showLyrics ? "Hide lyrics" : "Show lyrics"}
+            </span>
+          </button>
+          <button
+            onClick={() => navigate(`/setlists/${id}`)}
+            className="rounded-lg p-2 text-stage-muted hover:bg-white/5"
+            aria-label="Exit stage mode"
+          >
+            <X className="h-5 w-5" />
+          </button>
+        </div>
       </header>
 
       {/* Content */}
@@ -241,7 +258,7 @@ export default function StageMode() {
           </div>
         )}
 
-        {song.lyrics?.trim() && (
+        {showLyrics && song.lyrics?.trim() && (
           <div className="space-y-3">
             <p className="text-sm font-bold uppercase tracking-widest text-stage-muted">
               Versuri

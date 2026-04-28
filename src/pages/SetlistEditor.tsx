@@ -124,7 +124,11 @@ export default function SetlistEditor() {
   return (
     <section className="space-y-5">
       <div className="flex items-center justify-between gap-2">
-        <Button variant="ghost" size="sm" onClick={() => navigate(-1)}>
+        <Button
+          variant="ghost"
+          size="sm"
+          onClick={() => navigate(isNew ? "/setlists" : `/setlists/${id}`)}
+        >
           <ArrowLeft className="mr-1 h-4 w-4" /> Back
         </Button>
         <h1 className="text-lg font-bold">

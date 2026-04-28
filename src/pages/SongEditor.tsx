@@ -134,7 +134,11 @@ export default function SongEditor() {
   return (
     <section className="space-y-5">
       <div className="flex items-center justify-between gap-2">
-        <Button variant="ghost" size="sm" onClick={() => navigate(-1)}>
+        <Button
+          variant="ghost"
+          size="sm"
+          onClick={() => navigate(isNew ? "/" : `/songs/${id}`)}
+        >
           <ArrowLeft className="mr-1 h-4 w-4" /> Back
         </Button>
         <h1 className="text-lg font-bold">{isNew ? "New Song" : "Edit Song"}</h1>

@@ -68,6 +68,7 @@ export type Database = {
           id: string
           intro_info: string | null
           intro_starter_ids: Json
+          lyrics: string | null
           musical_key: string | null
           notes: string | null
           pdf_path: string | null
@@ -83,6 +84,7 @@ export type Database = {
           id?: string
           intro_info?: string | null
           intro_starter_ids?: Json
+          lyrics?: string | null
           musical_key?: string | null
           notes?: string | null
           pdf_path?: string | null
@@ -98,6 +100,7 @@ export type Database = {
           id?: string
           intro_info?: string | null
           intro_starter_ids?: Json
+          lyrics?: string | null
           musical_key?: string | null
           notes?: string | null
           pdf_path?: string | null

@@ -12,6 +12,10 @@ import {
   SheetTitle,
 } from "@/components/ui/sheet";
 import { cn } from "@/lib/utils";
+import { LyricsViewer } from "@/components/LyricsViewer";
+import { TransposeControl } from "@/components/TransposeControl";
+import { useNotation } from "@/hooks/useNotation";
+import { formatChord, transposeChord } from "@/lib/chords";
 
 export default function StageMode() {
   const { id } = useParams();
@@ -21,6 +25,8 @@ export default function StageMode() {
   const { data: members } = useBandMembers();
   const [index, setIndex] = useState(0);
   const [open, setOpen] = useState(false);
+  const [transposeMap, setTransposeMap] = useState<Record<string, number>>({});
+  const [notation] = useNotation();
 
   const songMap = useMemo(() => new Map(songs?.map((s) => [s.id, s])), [songs]);
   const items = useMemo(
@@ -33,6 +39,7 @@ export default function StageMode() {
 
   useEffect(() => {
     setIndex(0);
+    setTransposeMap({});
   }, [id]);
 
   // Keyboard navigation
@@ -73,6 +80,9 @@ export default function StageMode() {
   }
 
   const song = items[index];
+  const semitones = transposeMap[song.id] ?? 0;
+  const setSongSemitones = (n: number) =>
+    setTransposeMap((m) => ({ ...m, [song.id]: n }));
 
   return (
     <div className="flex min-h-screen flex-col bg-stage-bg text-stage-fg">
@@ -153,9 +163,19 @@ export default function StageMode() {
             <p className="text-sm font-bold uppercase tracking-widest text-stage-muted">
               Key
             </p>
-            <p className="text-7xl font-black text-stage-accent sm:text-8xl">
-              {song.musical_key}
-            </p>
+            <div className="flex flex-wrap items-center gap-4">
+              <p className="text-7xl font-black text-stage-accent sm:text-8xl">
+                {formatChord(transposeChord(song.musical_key, semitones), notation)}
+              </p>
+              <div onClick={(e) => e.stopPropagation()}>
+                <TransposeControl
+                  originalKey={song.musical_key}
+                  semitones={semitones}
+                  onChange={setSongSemitones}
+                  compact
+                />
+              </div>
+            </div>
           </div>
         )}
 
@@ -218,6 +238,21 @@ export default function StageMode() {
                 </li>
               ))}
             </ol>
+          </div>
+        )}
+
+        {song.lyrics?.trim() && (
+          <div className="space-y-3">
+            <p className="text-sm font-bold uppercase tracking-widest text-stage-muted">
+              Versuri
+            </p>
+            <LyricsViewer
+              source={song.lyrics}
+              semitones={semitones}
+              notation={notation}
+              size="lg"
+              className="text-stage-fg"
+            />
           </div>
         )}
       </button>

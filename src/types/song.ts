@@ -35,6 +35,7 @@ export interface Song {
   pdf_url: string | null;
   pdf_path: string | null;
   intro_starter_ids: string[];
+  lyrics: string | null;
   created_at: string;
   updated_at: string;
 }

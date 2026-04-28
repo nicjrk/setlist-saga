@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import {
   ArrowLeft,
@@ -12,12 +13,18 @@ import { useSong } from "@/hooks/useSongs";
 import { useBandMembers } from "@/hooks/useBandMembers";
 import { SECTION_COLOR } from "@/types/song";
 import { cn } from "@/lib/utils";
+import { LyricsViewer } from "@/components/LyricsViewer";
+import { TransposeControl } from "@/components/TransposeControl";
+import { useNotation } from "@/hooks/useNotation";
+import { formatChord, transposeChord } from "@/lib/chords";
 
 export default function SongView() {
   const { id } = useParams();
   const navigate = useNavigate();
   const { data: song, isLoading } = useSong(id);
   const { data: members } = useBandMembers();
+  const [semitones, setSemitones] = useState(0);
+  const [notation] = useNotation();
 
   if (isLoading) {
     return <p className="py-12 text-center text-muted-foreground">Loading…</p>;
@@ -46,7 +53,7 @@ export default function SongView() {
           <h1 className="text-3xl font-bold leading-tight">{song.title}</h1>
           {song.musical_key && (
             <span className="rounded-md bg-primary px-3 py-1.5 text-xl font-bold text-primary-foreground">
-              {song.musical_key}
+              {formatChord(transposeChord(song.musical_key, semitones), notation)}
             </span>
           )}
         </div>
@@ -131,6 +138,25 @@ export default function SongView() {
           <p className="text-sm text-muted-foreground">No structure added.</p>
         )}
       </Card>
+
+      {song.lyrics?.trim() && (
+        <Card className="space-y-3 p-4">
+          <div className="flex flex-wrap items-center justify-between gap-2">
+            <h2 className="text-base font-bold">Versuri & Acorduri</h2>
+            <TransposeControl
+              originalKey={song.musical_key}
+              semitones={semitones}
+              onChange={setSemitones}
+            />
+          </div>
+          <LyricsViewer
+            source={song.lyrics}
+            semitones={semitones}
+            notation={notation}
+            size="md"
+          />
+        </Card>
+      )}
 
       {(song.pdf_url || song.reference_url) && (
         <Card className="space-y-2 p-4">

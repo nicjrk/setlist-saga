@@ -139,7 +139,7 @@ export default function SongView() {
         )}
       </Card>
 
-      {(song as { lyrics?: string | null }).lyrics?.trim() && (
+      {song.lyrics?.trim() && (
         <Card className="space-y-3 p-4">
           <div className="flex flex-wrap items-center justify-between gap-2">
             <h2 className="text-base font-bold">Versuri & Acorduri</h2>
@@ -150,7 +150,7 @@ export default function SongView() {
             />
           </div>
           <LyricsViewer
-            source={(song as { lyrics: string }).lyrics}
+            source={song.lyrics}
             semitones={semitones}
             notation={notation}
             size="md"

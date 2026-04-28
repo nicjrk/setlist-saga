@@ -26,7 +26,7 @@ export default function SetlistView() {
   return (
     <section className="space-y-5">
       <div className="flex items-center justify-between gap-2">
-        <Button variant="ghost" size="sm" onClick={() => navigate(-1)}>
+        <Button variant="ghost" size="sm" onClick={() => navigate("/setlists")}>
           <ArrowLeft className="mr-1 h-4 w-4" /> Back
         </Button>
         <Button asChild variant="outline" size="sm">

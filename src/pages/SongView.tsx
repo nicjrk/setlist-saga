@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Link, useNavigate, useParams } from "react-router-dom";
+import { Link, useLocation, useNavigate, useParams } from "react-router-dom";
 import {
   ArrowLeft,
   Edit,
@@ -21,6 +21,7 @@ import { formatChord, transposeChord } from "@/lib/chords";
 export default function SongView() {
   const { id } = useParams();
   const navigate = useNavigate();
+  const location = useLocation();
   const { data: song, isLoading } = useSong(id);
   const { data: members } = useBandMembers();
   const [semitones, setSemitones] = useState(0);
@@ -38,7 +39,15 @@ export default function SongView() {
   return (
     <section className="space-y-5">
       <div className="flex items-center justify-between gap-2">
-        <Button variant="ghost" size="sm" onClick={() => navigate(-1)}>
+        <Button
+          variant="ghost"
+          size="sm"
+          onClick={() => {
+            const from = (location.state as { from?: string } | null)?.from;
+            if (from) navigate(from);
+            else navigate("/");
+          }}
+        >
           <ArrowLeft className="mr-1 h-4 w-4" /> Back
         </Button>
         <Button asChild variant="outline" size="sm">

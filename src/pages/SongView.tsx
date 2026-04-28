@@ -132,6 +132,25 @@ export default function SongView() {
         )}
       </Card>
 
+      {(song as { lyrics?: string | null }).lyrics?.trim() && (
+        <Card className="space-y-3 p-4">
+          <div className="flex flex-wrap items-center justify-between gap-2">
+            <h2 className="text-base font-bold">Versuri & Acorduri</h2>
+            <TransposeControl
+              originalKey={song.musical_key}
+              semitones={semitones}
+              onChange={setSemitones}
+            />
+          </div>
+          <LyricsViewer
+            source={(song as { lyrics: string }).lyrics}
+            semitones={semitones}
+            notation={notation}
+            size="md"
+          />
+        </Card>
+      )}
+
       {(song.pdf_url || song.reference_url) && (
         <Card className="space-y-2 p-4">
           <h2 className="text-base font-bold">Resources</h2>

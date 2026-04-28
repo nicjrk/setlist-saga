@@ -228,6 +228,18 @@ export default function SongEditor() {
       </Card>
 
       <Card className="space-y-3 p-4">
+        <h2 className="text-base font-bold">Versuri & Acorduri</h2>
+        <p className="text-xs text-muted-foreground">
+          Notează acordurile între paranteze pătrate <code className="rounded bg-muted px-1">[C]</code> chiar înainte de litera unde trebuie să cadă. La vizualizare se aliniază automat și pot fi transpuse live.
+        </p>
+        <LyricsEditor
+          value={form.lyrics}
+          onChange={(lyrics) => setForm({ ...form, lyrics })}
+          notation={notation}
+        />
+      </Card>
+
+      <Card className="space-y-3 p-4">
         <h2 className="text-base font-bold">Sheet Music</h2>
         <PdfUploader
           pdfUrl={form.pdf_url}

@@ -10,6 +10,8 @@ import { Separator } from "@/components/ui/separator";
 import { StructureBuilder } from "@/components/StructureBuilder";
 import { PdfUploader } from "@/components/PdfUploader";
 import { IntroStarterPicker } from "@/components/IntroStarterPicker";
+import { LyricsEditor } from "@/components/LyricsEditor";
+import { useNotation } from "@/hooks/useNotation";
 import { supabase } from "@/integrations/supabase/client";
 import { useSong } from "@/hooks/useSongs";
 import { useQueryClient } from "@tanstack/react-query";
@@ -27,6 +29,7 @@ const empty = {
   pdf_path: null as string | null,
   structure: [] as SongSection[],
   intro_starter_ids: [] as string[],
+  lyrics: "",
 };
 
 export default function SongEditor() {
@@ -35,6 +38,7 @@ export default function SongEditor() {
   const navigate = useNavigate();
   const qc = useQueryClient();
   const { data: song, isLoading } = useSong(isNew ? undefined : id);
+  const [notation] = useNotation();
 
   const [form, setForm] = useState(empty);
   const [saving, setSaving] = useState(false);
@@ -54,6 +58,7 @@ export default function SongEditor() {
         intro_starter_ids: Array.isArray(song.intro_starter_ids)
           ? song.intro_starter_ids
           : [],
+        lyrics: song.lyrics ?? "",
       });
     }
   }, [song]);
@@ -76,6 +81,7 @@ export default function SongEditor() {
         pdf_path: form.pdf_path,
         structure: form.structure as unknown as never,
         intro_starter_ids: form.intro_starter_ids as unknown as never,
+        lyrics: form.lyrics.trim() ? form.lyrics : null,
       };
       if (isNew) {
         const { data, error } = await supabase

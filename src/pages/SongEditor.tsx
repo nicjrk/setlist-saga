@@ -58,7 +58,7 @@ export default function SongEditor() {
         intro_starter_ids: Array.isArray(song.intro_starter_ids)
           ? song.intro_starter_ids
           : [],
-        lyrics: song.lyrics ?? "",
+        lyrics: (song as { lyrics?: string | null }).lyrics ?? "",
       });
     }
   }, [song]);

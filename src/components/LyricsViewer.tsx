@@ -11,7 +11,7 @@ interface Props {
   source: string;
   semitones?: number;
   notation?: Notation;
-  size?: "sm" | "md" | "lg";
+  size?: "xs" | "sm" | "md" | "lg";
   className?: string;
 }
 
@@ -35,9 +35,10 @@ export function LyricsViewer({
   const lines = transposed.split("\n");
 
   const sizeClasses = {
-    sm: { lyric: "text-sm", chord: "text-xs", lineGap: "py-3.5" },
-    md: { lyric: "text-base", chord: "text-sm", lineGap: "py-4" },
-    lg: { lyric: "text-2xl sm:text-3xl", chord: "text-lg sm:text-xl", lineGap: "py-5 sm:py-6" },
+    xs: { lyric: "text-xs", chord: "text-[10px]", lineGap: "pt-3 pb-0.5", chordEm: 0.5 },
+    sm: { lyric: "text-sm", chord: "text-xs", lineGap: "pt-3.5 pb-0.5", chordEm: 0.55 },
+    md: { lyric: "text-base", chord: "text-sm", lineGap: "pt-4 pb-0.5", chordEm: 0.6 },
+    lg: { lyric: "text-xl sm:text-2xl", chord: "text-base sm:text-lg", lineGap: "pt-5 pb-1", chordEm: 0.6 },
   }[size];
 
   return (
@@ -62,21 +63,31 @@ export function LyricsViewer({
             {segments.map((seg, j) => {
               if (!seg.chord && !seg.text) return null;
               const display = seg.text.length > 0 ? seg.text : "\u00A0";
+              const chordText = seg.chord ? formatChord(seg.chord, notation) : "";
+              // Reserve enough horizontal space so the absolutely-positioned
+              // chord above the segment never overlaps the next chord/lyric.
+              const minWidthEm = chordText
+                ? Math.max(chordText.length * sizeClasses.chordEm + 0.3, 0)
+                : 0;
               return (
                 <span
                   key={j}
-                  className={cn("relative inline-block", sizeClasses.lyric)}
-                  style={{ whiteSpace: "pre" }}
+                  className={cn("relative inline-block align-bottom", sizeClasses.lyric)}
+                  style={{
+                    whiteSpace: "pre",
+                    minWidth: minWidthEm ? `${minWidthEm}em` : undefined,
+                    paddingRight: chordText ? "0.15em" : undefined,
+                  }}
                 >
-                  {seg.chord && (
+                  {chordText && (
                     <span
                       className={cn(
-                        "absolute -top-5 left-0 font-bold text-primary",
+                        "absolute left-0 font-bold text-primary",
                         sizeClasses.chord
                       )}
-                      style={{ whiteSpace: "pre" }}
+                      style={{ whiteSpace: "pre", top: "-1.05em" }}
                     >
-                      {formatChord(seg.chord, notation)}
+                      {chordText}
                     </span>
                   )}
                   {display}

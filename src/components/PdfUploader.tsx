@@ -1,5 +1,5 @@
 import { useRef, useState } from "react";
-import { Upload, FileText, Image as ImageIcon, X, ExternalLink } from "lucide-react";
+import { Upload, FileText, Image as ImageIcon, File as FileIcon, X, ExternalLink } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
@@ -18,22 +18,36 @@ const ACCEPTED_TYPES = [
   "image/gif",
   "image/heic",
   "image/heif",
+  // Office / text documents
+  "application/msword",
+  "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+  "application/vnd.oasis.opendocument.text",
+  "application/rtf",
+  "text/rtf",
+  "text/plain",
 ];
+
+const ACCEPT_ATTR =
+  ACCEPTED_TYPES.join(",") + ",.pdf,.doc,.docx,.odt,.rtf,.txt";
 
 const isImage = (url: string | null) => {
   if (!url) return false;
   return /\.(jpg|jpeg|png|webp|gif|heic|heif)(\?|$)/i.test(url);
 };
 
+const isPdf = (url: string | null) => !!url && /\.pdf(\?|$)/i.test(url);
+
 export function PdfUploader({ pdfUrl, pdfPath, onChange }: Props) {
   const inputRef = useRef<HTMLInputElement>(null);
   const [uploading, setUploading] = useState(false);
 
   const handleFile = async (file: File) => {
-    const isPdf = file.type === "application/pdf";
-    const isImg = file.type.startsWith("image/");
-    if (!isPdf && !isImg) {
-      toast.error("Please upload a PDF or image file");
+    const okType =
+      ACCEPTED_TYPES.includes(file.type) ||
+      file.type.startsWith("image/") ||
+      /\.(pdf|doc|docx|odt|rtf|txt)$/i.test(file.name);
+    if (!okType) {
+      toast.error("Tip de fișier neacceptat");
       return;
     }
     setUploading(true);
@@ -76,7 +90,7 @@ export function PdfUploader({ pdfUrl, pdfPath, onChange }: Props) {
       <input
         ref={inputRef}
         type="file"
-        accept={ACCEPTED_TYPES.join(",")}
+        accept={ACCEPT_ATTR}
         className="hidden"
         onChange={(e) => {
           const f = e.target.files?.[0];
@@ -90,11 +104,17 @@ export function PdfUploader({ pdfUrl, pdfPath, onChange }: Props) {
             <div className="flex items-center gap-2 text-sm">
               {isImage(pdfUrl) ? (
                 <ImageIcon className="h-5 w-5 text-primary" />
-              ) : (
+              ) : isPdf(pdfUrl) ? (
                 <FileText className="h-5 w-5 text-primary" />
+              ) : (
+                <FileIcon className="h-5 w-5 text-primary" />
               )}
-              <span className="font-medium">
-                {isImage(pdfUrl) ? "Image attached" : "Sheet music attached"}
+              <span className="font-medium truncate max-w-[200px]">
+                {isImage(pdfUrl)
+                  ? "Imagine atașată"
+                  : isPdf(pdfUrl)
+                    ? "PDF atașat"
+                    : "Document atașat"}
               </span>
             </div>
             <div className="flex items-center gap-1">
@@ -140,7 +160,7 @@ export function PdfUploader({ pdfUrl, pdfPath, onChange }: Props) {
           onClick={() => inputRef.current?.click()}
         >
           <Upload className="mr-2 h-4 w-4" />
-          {uploading ? "Uploading…" : "Upload Sheet Music (PDF or Image)"}
+          {uploading ? "Se încarcă…" : "Încarcă fișier (PDF, imagine, doc)"}
         </Button>
       )}
     </div>

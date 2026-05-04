@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { ChevronLeft, ChevronRight, X, List, Eye, EyeOff } from "lucide-react";
 import { useSetlist } from "@/hooks/useSetlists";
@@ -28,6 +28,9 @@ export default function StageMode() {
   const [transposeMap, setTransposeMap] = useState<Record<string, number>>({});
   const [notation] = useNotation();
   const [showLyrics, setShowLyrics] = useState(true);
+  const contentRef = useRef<HTMLDivElement>(null);
+  const innerRef = useRef<HTMLDivElement>(null);
+  const [scale, setScale] = useState(1);
 
   const songMap = useMemo(() => new Map(songs?.map((s) => [s.id, s])), [songs]);
   const items = useMemo(
@@ -42,6 +45,32 @@ export default function StageMode() {
     setIndex(0);
     setTransposeMap({});
   }, [id]);
+
+  // Auto-fit: scale content down so each song fits on one screen.
+  useLayoutEffect(() => {
+    const fit = () => {
+      const outer = contentRef.current;
+      const inner = innerRef.current;
+      if (!outer || !inner) return;
+      // Reset before measuring.
+      inner.style.transform = "scale(1)";
+      const oh = outer.clientHeight;
+      const ow = outer.clientWidth;
+      const ih = inner.scrollHeight;
+      const iw = inner.scrollWidth;
+      const s = Math.min(1, oh / Math.max(ih, 1), ow / Math.max(iw, 1));
+      setScale(s);
+    };
+    fit();
+    const ro = new ResizeObserver(fit);
+    if (contentRef.current) ro.observe(contentRef.current);
+    if (innerRef.current) ro.observe(innerRef.current);
+    window.addEventListener("resize", fit);
+    return () => {
+      ro.disconnect();
+      window.removeEventListener("resize", fit);
+    };
+    }, [index, showLyrics, items.length]);
 
   // Keyboard navigation
   useEffect(() => {
@@ -158,121 +187,109 @@ export default function StageMode() {
         </div>
       </header>
 
-      {/* Content */}
-      <button
-        type="button"
-        onClick={() =>
-          setIndex((i) => Math.min(i + 1, items.length - 1))
-        }
-        className="flex flex-1 flex-col items-stretch gap-8 px-6 py-8 text-left"
+      {/* Content — auto-fits to screen */}
+      <div
+        ref={contentRef}
+        onClick={() => setIndex((i) => Math.min(i + 1, items.length - 1))}
+        className="relative flex-1 overflow-hidden px-3 py-3 sm:px-5 sm:py-4"
       >
-        <div className="space-y-2">
-          <p className="text-sm font-bold uppercase tracking-widest text-stage-muted">
-            Now Playing
-          </p>
-          <h1 className="text-5xl font-black leading-tight tracking-tight sm:text-6xl">
-            {song.title}
-          </h1>
-        </div>
-
-        {song.musical_key && (
-          <div>
-            <p className="text-sm font-bold uppercase tracking-widest text-stage-muted">
-              Key
-            </p>
-            <div className="flex flex-wrap items-center gap-4">
-              <p className="text-7xl font-black text-stage-accent sm:text-8xl">
-                {formatChord(transposeChord(song.musical_key, semitones), notation)}
-              </p>
-              <div onClick={(e) => e.stopPropagation()}>
-                <TransposeControl
-                  originalKey={song.musical_key}
-                  semitones={semitones}
-                  onChange={setSongSemitones}
-                  compact
-                />
+        <div
+          ref={innerRef}
+          style={{
+            transform: `scale(${scale})`,
+            transformOrigin: "top left",
+            width: scale < 1 ? `${100 / scale}%` : "100%",
+          }}
+          className="flex flex-col gap-3"
+        >
+          {/* Title + key inline */}
+          <div className="flex items-start justify-between gap-4">
+            <h1 className="text-3xl font-black leading-tight tracking-tight sm:text-4xl">
+              {song.title}
+            </h1>
+            {song.musical_key && (
+              <div className="flex items-center gap-2 shrink-0">
+                <span className="text-4xl font-black text-stage-accent sm:text-5xl leading-none">
+                  {formatChord(transposeChord(song.musical_key, semitones), notation)}
+                </span>
+                <div onClick={(e) => e.stopPropagation()}>
+                  <TransposeControl
+                    originalKey={song.musical_key}
+                    semitones={semitones}
+                    onChange={setSongSemitones}
+                    compact
+                  />
+                </div>
               </div>
-            </div>
+            )}
           </div>
-        )}
 
-        {song.intro_info && (
-          <div>
-            <p className="text-sm font-bold uppercase tracking-widest text-stage-muted">
-              Intro
-            </p>
-            <p className="text-3xl font-bold leading-snug sm:text-4xl">
-              {song.intro_info}
-            </p>
-          </div>
-        )}
-
-        {(song.intro_starter_ids?.length ?? 0) > 0 && (
-          <div>
-            <p className="text-sm font-bold uppercase tracking-widest text-stage-muted">
-              Începe
-            </p>
-            <div className="mt-1 flex flex-wrap gap-2">
-              {song.intro_starter_ids.map((sid) => {
-                const m = members?.find((x) => x.id === sid);
-                if (!m) return null;
-                return (
-                  <span
-                    key={sid}
-                    className="rounded-lg border-2 border-stage-accent/60 bg-stage-accent/10 px-3 py-1.5 text-2xl font-bold text-stage-accent sm:text-3xl"
-                  >
-                    {m.name}
-                    {m.instruments.length > 0 && (
-                      <span className="ml-2 text-lg font-medium text-stage-accent/80 sm:text-xl">
-                        · {m.instruments.join(", ")}
+          {/* Intro / starters compacted into a single row */}
+          {(song.intro_info || (song.intro_starter_ids?.length ?? 0) > 0) && (
+            <div className="flex flex-wrap items-center gap-x-4 gap-y-2 text-stage-muted">
+              {song.intro_info && (
+                <span className="text-base sm:text-lg font-semibold text-stage-fg">
+                  <span className="mr-2 text-xs uppercase tracking-widest text-stage-muted">Intro</span>
+                  {song.intro_info}
+                </span>
+              )}
+              {(song.intro_starter_ids?.length ?? 0) > 0 && (
+                <span className="flex flex-wrap items-center gap-1.5">
+                  <span className="text-xs uppercase tracking-widest text-stage-muted">Începe</span>
+                  {song.intro_starter_ids.map((sid) => {
+                    const m = members?.find((x) => x.id === sid);
+                    if (!m) return null;
+                    return (
+                      <span
+                        key={sid}
+                        className="rounded-md border border-stage-accent/60 bg-stage-accent/10 px-2 py-0.5 text-sm font-bold text-stage-accent"
+                      >
+                        {m.name}
                       </span>
-                    )}
-                  </span>
-                );
-              })}
+                    );
+                  })}
+                </span>
+              )}
             </div>
-          </div>
-        )}
+          )}
 
-        {song.structure?.length > 0 && (
-          <div className="space-y-2">
-            <p className="text-sm font-bold uppercase tracking-widest text-stage-muted">
-              Structure
-            </p>
-            <ol className="space-y-2">
-              {song.structure.map((s, i) => (
-                <li
-                  key={s.id}
-                  className="flex items-baseline gap-3 border-l-4 border-stage-accent/60 pl-3 text-2xl font-bold sm:text-3xl"
-                >
-                  <span className="text-stage-muted">{i + 1}.</span>
-                  <span className="uppercase">{s.type}</span>
-                  {s.cue && (
-                    <span className="text-xl font-medium text-stage-muted sm:text-2xl">
-                      — {s.cue}
-                    </span>
-                  )}
+          <div className="grid gap-4 lg:grid-cols-[minmax(0,1fr)_220px]">
+            {/* Lyrics — main column */}
+            {showLyrics && song.lyrics?.trim() ? (
+              <LyricsViewer
+                source={song.lyrics}
+                semitones={semitones}
+                notation={notation}
+                size="md"
+                className="text-stage-fg"
+              />
+            ) : (
+              <div />
+            )}
+
+            {/* Structure — side column on large screens */}
+            {song.structure?.length > 0 && (
+              <ol className="space-y-1 text-sm">
+                <li className="text-xs font-bold uppercase tracking-widest text-stage-muted">
+                  Structure
                 </li>
-              ))}
-            </ol>
+                {song.structure.map((s, i) => (
+                  <li
+                    key={s.id}
+                    className="flex items-baseline gap-2 border-l-2 border-stage-accent/60 pl-2 font-bold"
+                  >
+                    <span className="text-stage-muted">{i + 1}.</span>
+                    <span className="uppercase">{s.type}</span>
+                    {s.cue && (
+                      <span className="text-stage-muted font-medium">— {s.cue}</span>
+                    )}
+                  </li>
+                ))}
+              </ol>
+            )}
           </div>
-        )}
-
-        {showLyrics && song.lyrics?.trim() && (
-          <div className="space-y-3">
-            <p className="text-sm font-bold uppercase tracking-widest text-stage-muted">
-              Versuri
-            </p>
-            <LyricsViewer
-              source={song.lyrics}
-              semitones={semitones}
-              notation={notation}
-              size="lg"
-              className="text-stage-fg"
-            />
-          </div>
-        )}
-      </button>
+        </div>
+      </div>
 
       {/* Footer controls */}
       <footer className="grid grid-cols-2 border-t border-white/10">

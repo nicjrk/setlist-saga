@@ -1,5 +1,5 @@
 import { Link, useNavigate, useParams } from "react-router-dom";
-import { ArrowLeft, Edit, Play } from "lucide-react";
+import { ArrowLeft, Edit, Play, Printer } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { useSetlist } from "@/hooks/useSetlists";
@@ -29,11 +29,22 @@ export default function SetlistView() {
         <Button variant="ghost" size="sm" onClick={() => navigate("/setlists")}>
           <ArrowLeft className="mr-1 h-4 w-4" /> Back
         </Button>
-        <Button asChild variant="outline" size="sm">
-          <Link to={`/setlists/${setlist.id}/edit`}>
-            <Edit className="mr-1 h-4 w-4" /> Edit
-          </Link>
-        </Button>
+        <div className="flex gap-2">
+          <Button asChild variant="outline" size="sm">
+            <a
+              href={`/print/setlist/${setlist.id}`}
+              target="_blank"
+              rel="noreferrer"
+            >
+              <Printer className="mr-1 h-4 w-4" /> Export
+            </a>
+          </Button>
+          <Button asChild variant="outline" size="sm">
+            <Link to={`/setlists/${setlist.id}/edit`}>
+              <Edit className="mr-1 h-4 w-4" /> Edit
+            </Link>
+          </Button>
+        </div>
       </div>
 
       <Card className="space-y-2 p-5">

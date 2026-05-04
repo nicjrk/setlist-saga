@@ -6,6 +6,7 @@ import {
   ExternalLink,
   FileText,
   Music,
+  Printer,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
@@ -50,11 +51,22 @@ export default function SongView() {
         >
           <ArrowLeft className="mr-1 h-4 w-4" /> Back
         </Button>
-        <Button asChild variant="outline" size="sm">
-          <Link to={`/songs/${song.id}/edit`}>
-            <Edit className="mr-1 h-4 w-4" /> Edit
-          </Link>
-        </Button>
+        <div className="flex gap-2">
+          <Button asChild variant="outline" size="sm">
+            <a
+              href={`/print/song/${song.id}`}
+              target="_blank"
+              rel="noreferrer"
+            >
+              <Printer className="mr-1 h-4 w-4" /> Export
+            </a>
+          </Button>
+          <Button asChild variant="outline" size="sm">
+            <Link to={`/songs/${song.id}/edit`}>
+              <Edit className="mr-1 h-4 w-4" /> Edit
+            </Link>
+          </Button>
+        </div>
       </div>
 
       <Card className="space-y-3 p-5">

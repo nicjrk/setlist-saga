@@ -13,6 +13,8 @@ import SetlistEditor from "./pages/SetlistEditor";
 import StageMode from "./pages/StageMode";
 import Members from "./pages/Members";
 import NotFound from "./pages/NotFound.tsx";
+import PrintSong from "./pages/PrintSong";
+import PrintSetlist from "./pages/PrintSetlist";
 
 const queryClient = new QueryClient();
 
@@ -35,6 +37,8 @@ const App = () => (
             <Route path="/stage/:id" element={<StageMode />} />
             <Route path="/members" element={<Members />} />
           </Route>
+          <Route path="/print/song/:id" element={<PrintSong />} />
+          <Route path="/print/setlist/:id" element={<PrintSetlist />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>

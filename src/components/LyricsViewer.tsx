@@ -11,7 +11,7 @@ interface Props {
   source: string;
   semitones?: number;
   notation?: Notation;
-  size?: "sm" | "md" | "lg";
+  size?: "xs" | "sm" | "md" | "lg";
   className?: string;
 }
 

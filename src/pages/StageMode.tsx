@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { ChevronLeft, ChevronRight, X, List, Eye, EyeOff } from "lucide-react";
 import { useSetlist } from "@/hooks/useSetlists";
@@ -28,6 +28,9 @@ export default function StageMode() {
   const [transposeMap, setTransposeMap] = useState<Record<string, number>>({});
   const [notation] = useNotation();
   const [showLyrics, setShowLyrics] = useState(true);
+  const contentRef = useRef<HTMLDivElement>(null);
+  const innerRef = useRef<HTMLDivElement>(null);
+  const [scale, setScale] = useState(1);
 
   const songMap = useMemo(() => new Map(songs?.map((s) => [s.id, s])), [songs]);
   const items = useMemo(
@@ -42,6 +45,32 @@ export default function StageMode() {
     setIndex(0);
     setTransposeMap({});
   }, [id]);
+
+  // Auto-fit: scale content down so each song fits on one screen.
+  useLayoutEffect(() => {
+    const fit = () => {
+      const outer = contentRef.current;
+      const inner = innerRef.current;
+      if (!outer || !inner) return;
+      // Reset before measuring.
+      inner.style.transform = "scale(1)";
+      const oh = outer.clientHeight;
+      const ow = outer.clientWidth;
+      const ih = inner.scrollHeight;
+      const iw = inner.scrollWidth;
+      const s = Math.min(1, oh / Math.max(ih, 1), ow / Math.max(iw, 1));
+      setScale(s);
+    };
+    fit();
+    const ro = new ResizeObserver(fit);
+    if (contentRef.current) ro.observe(contentRef.current);
+    if (innerRef.current) ro.observe(innerRef.current);
+    window.addEventListener("resize", fit);
+    return () => {
+      ro.disconnect();
+      window.removeEventListener("resize", fit);
+    };
+  }, [index, showLyrics, semitones, notation, items.length]);
 
   // Keyboard navigation
   useEffect(() => {

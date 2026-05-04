@@ -70,7 +70,7 @@ export default function StageMode() {
       ro.disconnect();
       window.removeEventListener("resize", fit);
     };
-  }, [index, showLyrics, semitones, notation, items.length]);
+    }, [index, showLyrics, items.length]);
 
   // Keyboard navigation
   useEffect(() => {
